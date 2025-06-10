@@ -1,6 +1,4 @@
-pipeline
-{
-    agent any
+
     stages
     {
         stage("test second job")
@@ -10,5 +8,3 @@ pipeline
             echo "***** second job was run ******"
             }
         }    
-    }
-}
