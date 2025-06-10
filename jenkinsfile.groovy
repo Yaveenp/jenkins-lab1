@@ -1,17 +1,12 @@
-def call()
-{
-    pipeline
-    {
+def call() {
+    pipeline {
         agent any
-        stages
-        {
-            stage("test second job")
-            {
-                steps
-                {
-                ehco "***** second job was run ******"
+        stages {
+            stage('Run Second Job') {
+                steps {
+                    echo 'Hello from jenkins-lab1/jenkinsfile.groovy'
                 }
-            }    
+            }
         }
     }
 }
