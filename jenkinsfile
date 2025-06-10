@@ -1,14 +1,17 @@
-pipeline
+def call()
 {
-    agent any
-    stages
+    pipeline
     {
-        stage("test second job")
+        agent any
+        stages
         {
-            steps
+            stage("test second job")
             {
-            ehco "***** second job was run ******"
-            }
-        }    
+                steps
+                {
+                echo "***** second job was run ******"
+                }
+            }    
+        }
     }
-}   
+}
