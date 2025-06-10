@@ -1,7 +1,14 @@
-stage("test second job")
+pipeline
 {
-    steps
+    agent any
+    stages
     {
-    echo "***** second job was run ******"
+        stage("test second job")
+        {
+            steps
+            {
+            ehco "***** second job was run ******"
+            }
+        }    
     }
-}    
+}   
