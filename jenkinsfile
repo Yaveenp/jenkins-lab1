@@ -1,10 +1,7 @@
-
-    stages
+stage("test second job")
+{
+    steps
     {
-        stage("test second job")
-        {
-            steps
-            {
-            echo "***** second job was run ******"
-            }
-        }    
+    echo "***** second job was run ******"
+    }
+}    
