@@ -3,15 +3,85 @@ def call()
     pipeline
     {
         agent any
+        environment
+        {
+            APP_NAME='yaveen'
+            IMAGE="${APP_NAME}:V:${BUILD_NUMBER}"
+            TEST_RESULT=""
+            DOCKER_REPO=""
+        }
         stages
         {
             stage("test second job")
             {
                 steps
                 {
-                ehco "***** second job was run ******"
+                    ehco "***** second job was run ******"
                 }
             }    
+
+            stage("build")
+            {
+                steps
+                {
+                    ehco "****** building the app ******"
+                    dir('movies-api')
+                    {
+                    sh "docker builed -t ${APP_NAME}:V:${BUILD_NUMBER}" 
+                    }
+                    sh "docker images | grep -i ${APP_NAME}"
+                }
+            }
+
+            stage("test")
+            {
+                
+                steps
+                {
+                   ehco "****** testing the app ******" 
+                   sh "docker run -p 80:80 --name ${JOB_NAME} -d ${IMAGE}"
+                   dir("test")
+                   {
+                        script
+                        {
+                            ${TEST_RESULT} = sh "pyhton test.py"
+                        }
+                   }
+                }
+                post
+                {
+                    sh "docker -rf ${JOB_NAME}"
+                }
+            }
+
+            stage("deploy")
+            {
+                steps
+                {  
+                    ehco "******* deploying a new version *****"  
+                    withCredentials([usernamePassword(credentialsId: 'yaveen-cred', 
+                                                       usernameVariable: 'DOCKER_USER', 
+                                                       passwordVariable: 'DOCKER_PASS')])
+                                                       {
+                                                            sh '''
+                                                                echo "$DOCKER_PASS" | docker login -u "DOCKER_USER" --password-stdin
+                                                                docker tag "${IMAGE}" "${DOCKER_REPO}"
+                                                                docker push ${DOCKER_REPO}:${BUILD_NUMBER}
+                                                            '''
+                                                       }
+                }
+                post
+                {
+                    docker image rm -f yaveen*
+                }
+            }
+        }
+        post
+        {
+            always  
+                {
+                    deleteDir()
+                }
         }
     }
 }
