@@ -1,0 +1,17 @@
+def call()
+{
+    pipeline
+    {
+        agent any
+        stages
+        {
+            stage("test second job")
+            {
+                steps
+                {
+                ehco "***** second job was run ******"
+                }
+            }    
+        }
+    }
+}
