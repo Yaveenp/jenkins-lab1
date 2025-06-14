@@ -8,8 +8,8 @@ COPY requirments.txt ../movies-api
 
 RUN pip install -r requirments.txt
 
-COPY app.py ../movies-api
+COPY movies.py ../movies-api 
 
 RUN rm -f requirments.txt
 
-CMD [ "python", "app.py" ]
+CMD [ "python", "movies.py" ]
