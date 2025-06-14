@@ -25,10 +25,10 @@ def call()
             {
                 steps
                 {
-                    ehco "****** building the app ******"
+                    echo "****** building the app ******"
                     dir('movies-api')
                     {
-                    sh "docker builed -t ${APP_NAME}:V:${BUILD_NUMBER}" 
+                    sh "docker build -t ${APP_NAME}:V:${BUILD_NUMBER}" 
                     }
                     sh "docker images | grep -i ${APP_NAME}"
                 }
@@ -39,24 +39,28 @@ def call()
                 
                 steps
                 {
-                   ehco "****** testing the app ******" 
+                   echo "****** testing the app ******" 
                    sh "docker run -p 8888:80 --name ${JOB_NAME} -d ${IMAGE}"
                    dir("movies/test")
                    {
                         script
                         {
                             def dockerIp = sh(
-                            script: "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${JOB_NAM}",
+                            script: "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${JOB_NAME}",
                             returnStdout: true
                             ).trim()
                             echo "URL: '${dockerIp}:8888/movies'"
-                            ${TEST_RESULT} = sh "pyhton test.py"
-                        }
+                            def TEST_RESULT = sh(
+                                script: "python test.py",
+                                returnStdout: true
+                            ).trim()
+                            env.TEST_RESULT = TEST_RESULT
+                         }
                    }
                 }
                 post
                 {
-                    sh "docker -rf ${JOB_NAME}"
+                    sh "docker rm -f ${JOB_NAME}"
                 }
             }
 
@@ -70,7 +74,7 @@ def call()
                                     return env.TEST_RESULT != 'OK';
                                 }
                             }   
-                    ehco "******* deploying a new version *****"  
+                    echo "******* deploying a new version *****"  
                     withCredentials([usernamePassword(credentialsId: 'yaveen-cred', 
                                                        usernameVariable: 'DOCKER_USER', 
                                                        passwordVariable: 'DOCKER_PASS')])
