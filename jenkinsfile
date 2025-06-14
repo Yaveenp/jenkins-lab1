@@ -60,7 +60,11 @@ def call()
                 }
                 post
                 {
-                    sh "docker rm -f ${JOB_NAME}"
+                    always
+                    {
+                        sh "docker rm -f ${JOB_NAME}"
+                    }
+                    
                 }
             }
 
@@ -88,7 +92,10 @@ def call()
                 }
                 post
                 {
-                   sh 'docker image rm -f yaveen*'
+                    always
+                    {
+                        sh 'docker image rm -f yaveen*'
+                    } 
                 }
             }
         }
