@@ -1,6 +1,4 @@
-def call()
-{
-    pipeline
+pipeline
     {
         agent any
         environment
@@ -107,4 +105,4 @@ def call()
                 }
         }
     }
-}
+    
