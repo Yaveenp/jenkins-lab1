@@ -8,7 +8,7 @@ def call()
             APP_NAME='yaveen'
             IMAGE="${APP_NAME}:V:${BUILD_NUMBER}"
             DOCKER_REPO=""
-            URL=""
+            APP_URL=""
         }
         stages
         {
