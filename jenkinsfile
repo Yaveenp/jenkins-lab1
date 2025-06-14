@@ -28,7 +28,7 @@ def call()
                     echo "****** building the app ******"
                     dir('movies-api')
                     {
-                    sh "docker build -t ${APP_NAME}:V:${BUILD_NUMBER}" 
+                    sh "docker build -t ${APP_NAME}:V:${BUILD_NUMBER} ../movies" 
                     }
                     sh "docker images | grep -i ${APP_NAME}"
                 }
