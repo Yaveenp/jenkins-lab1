@@ -28,7 +28,7 @@ def check_movie_addtion(url,movie:dict):
             print(e)
             os.environ.TEST_RESULT = "BAD"     
 
-if _name=='main_':
+if __name__ =='__main__':
     url= environ.get.URL or 'localhost:8888/movie'
     movie={"id": 5, "name": "test movie", 'length': 120, 'genre': 'test'}
     check_movie_addtion(url,movie)
