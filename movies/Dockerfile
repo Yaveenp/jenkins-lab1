@@ -4,14 +4,16 @@ ENV APP_URL=$APP_URL
 
 WORKDIR app
 
-EXPOSE 80
+ENV WORKSPACE=$WORKSPACE
 
-COPY requirments.txt ../movies-api
+COPY requirments.txt .
 
-RUN pip install -r requirments.txt
+RUN pip3 install -r requirments.txt
 
-COPY movies.py ../movies-api 
+COPY /movies.py .
 
 RUN rm -f requirments.txt
 
-CMD [ "python", "movies.py" ]
+EXPOSE 80
+
+CMD [ "python3", "movies.py" ]

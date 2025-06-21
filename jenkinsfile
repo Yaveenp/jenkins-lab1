@@ -4,7 +4,7 @@ pipeline
         environment
         {
             APP_NAME='yaveen'
-            IMAGE="${APP_NAME}:V:${BUILD_NUMBER}"
+            IMAGE="${APP_NAME}:${BUILD_NUMBER}"
             DOCKER_REPO=""
             APP_URL=""
         }
@@ -16,6 +16,7 @@ pipeline
                 {
                     echo "***** clonening repos ******"
                     sh 'git clone https://github.com/devopsPRO27/movies-api'
+                    sh 'mv -r movies-api/* movies/'
                 }
             }    
 
@@ -26,19 +27,60 @@ pipeline
                     echo "****** building the app ******"
                     dir('movies-api')
                     {
-                    sh "docker build -t ${APP_NAME}:V:${BUILD_NUMBER} ../movies" 
+                    sh "docker build -t ${APP_NAME}:${BUILD_NUMBER} movies/" 
                     }
-                    sh "docker images | grep -i ${APP_NAME}"
+                }
+                post
+                {
+                    success
+                    {
+                        echo "****** printing the image ******"
+                        sh "docker images | grep -i ${APP_NAME}"
+                    }
                 }
             }
-
+            stage("prepare test env")
+            {
+                parallel
+                {
+                    stage("install requirements")
+                    {
+                        steps
+                        {
+                            dir("movies/test")
+                            {
+                                sh "pip3 install requirements.txt"
+                            }
+                        }
+                    }
+                    stage("change shell scropt permissions")
+                    {
+                        steps
+                        {
+                           dir("movies/test")
+                           {
+                            sh "chmod 777 test.sh"
+                           } 
+                        }
+                    }
+                    stage("run the application")
+                    {
+                        steps
+                        {
+                            sh "docker run -p 8888:80 --name ${JOB_NAME} -d ${IMAGE}"
+                        }
+                    }
+                }
+            }
             stage("test")
             {
-                
                 steps
                 {
+                timeot(time: 10, unit: 'SECONDS')
+                {
+                   retry(3)
+                   { 
                    echo "****** testing the app ******" 
-                   sh "docker run -p 8888:80 --name ${JOB_NAME} -d ${IMAGE}"
                    dir("movies/test")
                    {
                         script
@@ -55,15 +97,18 @@ pipeline
                             env.TEST_RESULT = TEST_RESULT
                          }
                    }
+                   }
                 }
-                post
+                }
+            }
+            post
+            {
+                always
                 {
-                    always
-                    {
-                        sh "docker rm -f ${JOB_NAME}"
-                    }
-                    
+                    sh "docker rm -f ${JOB_NAME}"
                 }
+                    
+            }
             }
 
             stage("deploy")
